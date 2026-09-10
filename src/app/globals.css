@@ -113,6 +113,7 @@
   body {
     background: var(--canvas);
     color: var(--label);
+    overflow-wrap: break-word;
     -webkit-tap-highlight-color: transparent;
   }
 

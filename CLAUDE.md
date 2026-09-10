@@ -42,9 +42,17 @@ reflections: id, user_id, source_entry_id, target_date, reflection_text, generat
 (cache AI reflections — don't regenerate on every page view)
 
 ## Design Direction
-Ergonomic, luxury, calm. Warm palette, generous whitespace, serif/warm-sans
-typography, minimal chrome. The prompted-entry form should feel like writing,
-not filling out a form.
+Apple-native: design every screen as if Echo were an Apple app, following the
+iOS Human Interface Guidelines (reference: Apple's Journal app). Calm, warm,
+content-first, minimal chrome.
+- Type: system stack — SF Pro / New York / SF Pro Rounded on Apple devices,
+  Inter / Lora elsewhere. Use the HIG type tokens in `globals.css`
+  (`text-large-title` … `text-caption`), not ad-hoc sizes.
+- Color: semantic tokens only (`canvas`, `card`, `label`, `label-2`,
+  `separator`, `fill`, `tint`); every screen must work in light and dark mode.
+- Patterns: large titles, grouped inset cards, tab bar (bottom on mobile,
+  floating capsule on desktop), segmented controls, 44px touch targets.
+- The prompted-entry form should feel like writing, not filling out a form.
 
 ## Current Phase
 Phase 1-3 done: entry form (both modes), Neon write, `/past` resurfacing view

@@ -3,9 +3,9 @@ import { entries, reflections, users, type Entry, type User } from '@/lib/db/sch
 import { and, gte, lte, eq, desc } from 'drizzle-orm'
 
 const RESURFACE_WINDOWS = [
-  { label: '1 week ago', days: 7 },
-  { label: '1 month ago', days: 30 },
-  { label: '1 year ago', days: 365 },
+  { label: 'A week ago', days: 7 },
+  { label: 'A month ago', days: 30 },
+  { label: 'A year ago', days: 365 },
 ]
 
 function windowAround(daysAgo: number, radius = 3) {
@@ -43,7 +43,15 @@ export async function getAllEntries(userId: string): Promise<Entry[]> {
     .select()
     .from(entries)
     .where(eq(entries.userId, userId))
-    .orderBy(desc(entries.date))
+    .orderBy(desc(entries.date), desc(entries.createdAt))
+}
+
+export async function getEntryById(userId: string, id: string): Promise<Entry | null> {
+  const [entry] = await db
+    .select()
+    .from(entries)
+    .where(and(eq(entries.id, id), eq(entries.userId, userId)))
+  return entry ?? null
 }
 
 export async function getAllUsers(): Promise<User[]> {
