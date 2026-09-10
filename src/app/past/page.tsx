@@ -1,12 +1,20 @@
-import { getResurfacedEntries } from '@/lib/db/queries'
+import { getResurfacedEntries, getCachedReflection } from '@/lib/db/queries'
 import Link from 'next/link'
 import { getDailyLine } from '@/lib/quotes'
 import { EntryCard } from '@/components/EntryCard'
 
 export default async function PastEntriesPage() {
   const userId = process.env.SINGLE_USER_ID!
+  const today = new Date().toISOString().split('T')[0]
 
-  const results = await getResurfacedEntries(userId)
+  const windows = await getResurfacedEntries(userId)
+  const results = await Promise.all(
+    windows.map(async ({ label, entry }) => ({
+      label,
+      entry,
+      reflection: entry ? await getCachedReflection(entry.id, today) : null,
+    }))
+  )
 
   const line = getDailyLine(1)
 
@@ -26,7 +34,7 @@ export default async function PastEntriesPage() {
       </header>
 
       <div className="space-y-10">
-        {results.map(({ label, entry }, i) => (
+        {results.map(({ label, entry, reflection }, i) => (
           <section
             key={label}
             className="animate-fade-in-up"
@@ -36,7 +44,19 @@ export default async function PastEntriesPage() {
               {label}
             </h2>
             {entry ? (
-              <EntryCard entry={entry} />
+              <div className="space-y-4">
+                <EntryCard entry={entry} />
+                {reflection && (
+                  <div className="rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-6">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-amber-700 block mb-2">
+                      Echo&apos;s reflection
+                    </span>
+                    <p className="font-serif text-stone-800 leading-relaxed italic">
+                      {reflection.reflectionText}
+                    </p>
+                  </div>
+                )}
+              </div>
             ) : (
               <div className="rounded-3xl border border-dashed border-amber-200 bg-white/40 p-6">
                 <p className="text-stone-500 text-sm italic font-serif">Nothing written around this time yet.</p>

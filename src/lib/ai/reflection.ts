@@ -1,4 +1,4 @@
-const GEMINI_MODEL = 'gemini-2.5-flash'
+const GEMINI_MODEL = 'gemini-3.6-flash'
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`
 
 interface EntryForReflection {
@@ -41,7 +41,7 @@ export async function generateReflection(entry: EntryForReflection, daysAgo: num
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
       contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-      generationConfig: { temperature: 0.4, maxOutputTokens: 300 },
+      generationConfig: { temperature: 0.4, maxOutputTokens: 2048 },
     }),
   })
 

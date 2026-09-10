@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAllUsers, getResurfacedEntries, getCachedReflection, cacheReflection } from '@/lib/db/queries'
 import { generateReflection } from '@/lib/ai/reflection'
-import { sendTelegramMessage } from '@/lib/notifications/telegram'
 
 export async function GET(req: NextRequest) {
   const authHeader = req.headers.get('authorization')
@@ -33,17 +32,7 @@ export async function GET(req: NextRequest) {
         }
       }
 
-      if (user.notifyTelegram && user.telegramChatId) {
-        try {
-          await sendTelegramMessage(user.telegramChatId, `${label}:\n\n${reflectionText}`)
-          results.push({ userId: user.id, label, status: 'sent' })
-        } catch (err) {
-          console.error(`Telegram send failed (user ${user.id}):`, err)
-          results.push({ userId: user.id, label, status: 'telegram_failed' })
-        }
-      } else {
-        results.push({ userId: user.id, label, status: existing ? 'already_cached' : 'generated' })
-      }
+      results.push({ userId: user.id, label, status: existing ? 'already_cached' : 'generated' })
     }
   }
 
