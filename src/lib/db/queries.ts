@@ -1,5 +1,5 @@
 import { db } from '@/lib/db'
-import { entries, type Entry } from '@/lib/db/schema'
+import { entries, reflections, users, type Entry, type User } from '@/lib/db/schema'
 import { and, gte, lte, eq, desc } from 'drizzle-orm'
 
 const RESURFACE_WINDOWS = [
@@ -33,7 +33,7 @@ export async function getResurfacedEntries(userId: string) {
         .from(entries)
         .where(and(eq(entries.userId, userId), gte(entries.date, from), lte(entries.date, to)))
         .limit(1)
-      return { label, entry: entry ?? null }
+      return { label, days, entry: entry ?? null }
     })
   )
 }
@@ -44,4 +44,24 @@ export async function getAllEntries(userId: string): Promise<Entry[]> {
     .from(entries)
     .where(eq(entries.userId, userId))
     .orderBy(desc(entries.date))
+}
+
+export async function getAllUsers(): Promise<User[]> {
+  return db.select().from(users)
+}
+
+export async function getCachedReflection(sourceEntryId: string, targetDate: string) {
+  const [row] = await db
+    .select()
+    .from(reflections)
+    .where(and(eq(reflections.sourceEntryId, sourceEntryId), eq(reflections.targetDate, targetDate)))
+  return row ?? null
+}
+
+export async function cacheReflection(userId: string, sourceEntryId: string, targetDate: string, reflectionText: string) {
+  const [row] = await db
+    .insert(reflections)
+    .values({ userId, sourceEntryId, targetDate, reflectionText })
+    .returning()
+  return row
 }

@@ -1,0 +1,5 @@
+{
+  "crons": [
+    { "path": "/api/cron/generate-reflections", "schedule": "0 3 * * *" }
+  ]
+}
