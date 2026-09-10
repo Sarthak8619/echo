@@ -25,11 +25,11 @@ and pushed via Telegram/email/WhatsApp.
 | Layer | Choice |
 |---|---|
 | Frontend | Next.js (App Router), TypeScript, Tailwind |
-| Database + Auth | Supabase (Postgres) |
+| Database + Auth | Neon (Postgres) — Supabase free tier pauses after 7 days idle, breaking local dev; migrate to Supabase at Phase 6 for multi-user auth |
 | Hosting | Vercel |
 | Scheduler | Vercel Cron |
-| Notifications | Telegram Bot API (first) → Resend email (second) → Twilio WhatsApp (last) |
-| AI | Claude API — for reflection generation and later digest generation |
+| Notifications | Telegram Bot API (first) → Brevo email (second) → Twilio WhatsApp (last) |
+| AI | Google Gemini (free tier) — for reflection generation and later digest generation; cost-driven choice at current ~3-user scale, revisit (likely Claude Haiku via Batch API) once usage outgrows the free tier |
 
 ## Data Model
 entries: id, user_id, date, mode ('freeform'|'prompted'), freeform_text,
@@ -47,9 +47,12 @@ typography, minimal chrome. The prompted-entry form should feel like writing,
 not filling out a form.
 
 ## Current Phase
-Phase 1: Proof of concept. No auth, single user (me), local dev.
-Building: entry form (both modes) + Supabase write + simple past-entries list.
-No notifications, no AI yet — that's Phase 3.
+Phase 1-3 done: entry form (both modes), Neon write, `/past` resurfacing view
++ `/entries` chronological list, deployed to Vercel, AI reflections (Gemini
+free tier, cached in `reflections`, generated nightly via Vercel Cron) shown
+on `/past`. Telegram notifications were planned for Phase 3 but deprioritized
+for now — not built. No auth yet, still single user (me).
+Next: Phase 4 (Brevo email) whenever notifications become a priority again.
 
 ## Rules
 - Don't build multi-user auth before Phase 6.
