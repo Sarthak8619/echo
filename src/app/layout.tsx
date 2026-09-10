@@ -1,26 +1,33 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter, Lora } from 'next/font/google'
+import { TabBar } from '@/components/TabBar'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
-const lora = Lora({ subsets: ['latin'], variable: '--font-lora' })
+const lora = Lora({ subsets: ['latin'], variable: '--font-lora', style: ['normal', 'italic'] })
 
 export const metadata: Metadata = {
-  title: 'Echo',
-  description: 'A quiet place to reflect.',
+  title: { default: 'Echo', template: '%s · Echo' },
+  description: 'A quiet journal that brings your days back to you.',
+  appleWebApp: { capable: true, title: 'Echo', statusBarStyle: 'default' },
+}
+
+export const viewport: Viewport = {
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f6f4f0' },
+    { media: '(prefers-color-scheme: dark)', color: '#000000' },
+  ],
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${lora.variable}`}>
-      <body className="min-h-screen bg-background text-foreground antialiased relative overflow-x-hidden">
-        <div className="fixed inset-0 -z-20 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -left-32 w-[34rem] h-[34rem] rounded-full bg-amber-200/45 blur-3xl animate-drift" />
-          <div className="absolute top-1/3 -right-40 w-[30rem] h-[30rem] rounded-full bg-rose-200/35 blur-3xl animate-drift-slow" />
-          <div className="absolute bottom-[-8rem] left-1/4 w-[28rem] h-[28rem] rounded-full bg-orange-100/45 blur-3xl animate-drift" />
-        </div>
-        <div className="fixed inset-0 -z-10 grain-overlay pointer-events-none" />
-        {children}
+      <body className="min-h-dvh bg-canvas font-sans text-label antialiased">
+        <TabBar />
+        <main className="mx-auto w-full max-w-[42rem] px-4 pb-[calc(env(safe-area-inset-bottom)+6.5rem)] sm:px-6 md:pt-24 md:pb-20">
+          {children}
+        </main>
       </body>
     </html>
   )
